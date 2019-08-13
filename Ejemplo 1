@@ -1,0 +1,96 @@
+        /* Ejemplo de como usar Facade */
+        /* sacar dinero de la cuenta del banco. 
+        Para la retirada de fectivo en un cajero automático, 
+        se requiere un gran número de operaciones para garantizar la seguridad y la integridad.
+        En primer lugar vamos a ver los prototipos de las clases (con implementación dummy,
+        ya que no es relevante) que intervienen en el relativo proceso de retirada de efectivo de un cajero automático: */
+
+public class Autentificacion{
+
+        /* ... */
+
+        public boolean leerTarjeta(){}
+
+        public String introducirClave(){}
+        public boolean comprobarClave(String clave){}
+        public Cuenta obtenerCuenta(){}
+        public void alFallar(){}
+}
+
+
+
+public class Cajero{
+        /* ... */
+        public int introducirCantidad(){}
+        public boolean tieneSaldo(int cantidad){}
+        public int expedirDinero{}
+        public String imprimirTicket(){}
+}
+
+public class Cuenta{
+
+        /* ... */
+        public double comprobarSaldoDisponible(){}
+        public boolean bloquearCuenta(){}
+        public boolean desbloquearCuenta{}
+        public void retirarSaldo(int cantidad){}
+        public boolean actualizarCuenta(){}
+        public void alFallar(){}
+}
+
+        /* Mediante estas operaciones, el cliente tendría que acceder a 3 subsistemas 
+        y realizar una inmensa cantidad de operaciones. Sin embargo, se creará una fachada 
+        para ofrecer una interfaz mucho más amigable: */
+        
+ public class FachadaCajero{
+
+        private Autentificacion autentificacion = new Autentificacion();
+        private Cajero cajero = new Cajero();
+        private Cuenta cuenta = null;
+
+        public void introducirCredenciales(){
+                boolean tarjeta_correcta = autentificacion.leerTarjeta(); 
+                if(tarjeta_correcta){
+                        String clave = autentificacion.introducirClave();
+                        boolean clave_correcta = autentificacion.comprobarClave(clave);
+                        if(clave_correcta){
+                                cuenta = autentificacion.obtenerCuenta();
+                                return;
+                        }
+                }
+                autentificacion.alFallar();
+        }
+
+        public void sacarDinero(){
+                if(cuenta != null){
+                        int cantidad = cajero.introducirCantidad();
+                        int tiene_dinero = cajero.tieneSaldo(cantidad);
+                        if(tiene_dinero){
+                                boolean hay_saldo_suficiente = ((int)cuenta.comprobarSaldoDisponible()) >= cantidad;
+                                if(hay_saldo_suficiente){
+                                        cuenta.bloquearCuenta();
+                                        cuenta.retirarSaldo(cantidad);
+                                        cuenta.actualizarCuenta();
+                                        cuenta.desbloquearCuenta();
+                                        cajero.expedirDinero();
+                                        cajero.imprimirTicket();
+                                }
+                                else{
+                                        cuenta.alFallar();
+
+                                }
+                        }
+                }
+        }
+}
+
+        /* De esta manera, se ha conseguido que para que un cliente use el cajero, 
+        no tenga que realizar todas las operaciones de sus subsistemas. 
+        En lugar de ello proporcionamos una interfaz mucho más simple que facilita enormemente su uso:*/
+
+public static void main(String[] args){
+        FachadaCajero cajero_automatico = new FachadaCajero();
+
+        cajero_automatico.introducirCredenciales();
+        cajero_automatico.sacarDinero();
+}
