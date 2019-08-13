@@ -1,0 +1,59 @@
+      /* Un cliente necesita conectarse a una impresora pero desconoce el nombre de la impresora
+      y la configuración de la misma, solo sabe el texto que la envía a la misma que se debe imprimir, 
+      el cliente (como todo cliente/usuario) al meter manos en este dispositivo puede ocasionar problemas graves.*/ 
+      
+      /* Impresora */
+
+package ar.com.patronesdisenio.facade.impresora;
+
+  public class Impresora {
+ 
+     private String nombre;
+     private String tipoHoja;
+     private String texto;
+ 
+  public String getNombre() {
+      return nombre;
+   }
+   public void setNombre(String nombre) {
+      this.nombre = nombre;
+   }
+   public String getTipoHoja() {
+     return tipoHoja;
+  }
+  public void setTipoHoja(String tipoHoja) {
+     this.tipoHoja = tipoHoja;
+  }
+    public String getTexto() {
+   return texto;
+   }
+  public void setTexto(String texto) {
+     this.texto = texto;
+  }
+}
+
+      /* Facade */
+      
+  package ar.com.patronesdisenio.facade.central;
+  import ar.com.patronesdisenio.facade.impresora.Impresora;
+  public class FacadeCentral {
+  private Impresora impresora;
+   public void imprimir(String texto){
+      impresora = new  Impresora();
+      impresora.setNombre("NICO-Printer");
+      impresora.setTipoHoja("A4");
+      impresora.setTexto(texto);
+  }
+}
+
+
+      /* Main */
+package ar.com.patronesdisenio.facade.cliente;
+import ar.com.patronesdisenio.facade.central.FacadeCentral;
+public class ClienteMain {
+  public static void main(String[] args) {
+    FacadeCentral facadeCentral  = new FacadeCentral();
+    facadeCentral.imprimir("Texto a imprimir");
+  }
+}
+ 
